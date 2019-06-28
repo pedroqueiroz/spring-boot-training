@@ -27,6 +27,7 @@ public class TopicsController {
     private TopicsRepository topicsRepository;
 
     @PostMapping
+    @Transactional
     public ResponseEntity<TopicDTO> add(@RequestBody @Valid TopicForm topicForm, UriComponentsBuilder uriBuilder) {
         Topic topic = topicForm.convert(courseRepository);
 
@@ -38,6 +39,7 @@ public class TopicsController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<?> delete(@PathVariable Long id) {
         topicsRepository.deleteById(id);
 
