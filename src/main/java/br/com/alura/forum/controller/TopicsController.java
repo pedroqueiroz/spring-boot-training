@@ -37,6 +37,13 @@ public class TopicsController {
             .body(new TopicDTO(topic));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        topicsRepository.deleteById(id);
+
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/{id}")
     public DetailedTopicDTO detail(@PathVariable Long id) {
         return new DetailedTopicDTO(topicsRepository.getOne(id));
