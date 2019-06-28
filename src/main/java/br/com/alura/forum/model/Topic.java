@@ -1,25 +1,31 @@
 package br.com.alura.forum.model;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class Topic {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String title;
 	private String message;
 	private LocalDateTime creationDate = LocalDateTime.now();
-	private TopicStatus status = TopicStatus.UNANSWERED;
-	private User author;
-	private Course course;
-	private List<Answer> answers = new ArrayList<>();
 
-	public Topic(String title, String message, Course course) {
-		this.title = title;
-		this.message = message;
-		this.course = course;
-	}
+	@Enumerated(EnumType.STRING)
+	private TopicStatus status = TopicStatus.UNANSWERED;
+
+	@ManyToOne
+	private User author;
+
+	@ManyToOne
+	private Course course;
+
+	@OneToMany(mappedBy = "topic")
+	private List<Answer> answers = new ArrayList<>();
 
 	@Override
 	public int hashCode() {
