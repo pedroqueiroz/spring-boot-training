@@ -15,6 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("topics")
@@ -41,14 +42,21 @@ public class TopicsController {
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        topicsRepository.deleteById(id);
+        if (topicExists(id)) {
+            return ResponseEntity.notFound().build();
+        }
 
+        topicsRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}")
-    public DetailedTopicDTO detail(@PathVariable Long id) {
-        return new DetailedTopicDTO(topicsRepository.getOne(id));
+    public ResponseEntity<DetailedTopicDTO> detail(@PathVariable Long id) {
+        if (topicExists(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(new DetailedTopicDTO(topicsRepository.getOne(id)));
     }
 
     @GetMapping
@@ -63,6 +71,20 @@ public class TopicsController {
     @PutMapping("/{id}")
     @Transactional
     public ResponseEntity<TopicDTO> update(@PathVariable Long id, @RequestBody @Valid UpdatedTopicForm updatedTopicForm) {
+        if (topicExists(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
         return ResponseEntity.ok(new TopicDTO(updatedTopicForm.update(id, topicsRepository)));
+    }
+
+    private boolean topicExists(Long id) {
+        Optional<Topic> optionalTopic = topicsRepository.findById(id);
+
+        if (!optionalTopic.isPresent()) {
+            return true;
+        }
+
+        return false;
     }
 }
