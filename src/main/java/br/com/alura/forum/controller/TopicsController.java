@@ -2,19 +2,22 @@ package br.com.alura.forum.controller;
 
 import br.com.alura.forum.controller.dto.DetailedTopicDTO;
 import br.com.alura.forum.controller.dto.TopicDTO;
-import br.com.alura.forum.controller.form.UpdatedTopicForm;
 import br.com.alura.forum.controller.form.TopicForm;
+import br.com.alura.forum.controller.form.UpdatedTopicForm;
 import br.com.alura.forum.model.Topic;
 import br.com.alura.forum.repository.CourseRepository;
 import br.com.alura.forum.repository.TopicsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -60,12 +63,16 @@ public class TopicsController {
     }
 
     @GetMapping
-    public List<TopicDTO> list(String courseName) {
+    public Page<TopicDTO> list(@RequestParam(required = false) String courseName,
+                               @RequestParam int page, @RequestParam int size, @RequestParam String orderBy) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.ASC, orderBy);
+
         if (courseName != null) {
-           return TopicDTO.convert(topicsRepository.findByCourseName(courseName));
+           return TopicDTO.convert(topicsRepository.findByCourseName(courseName, pageable));
         }
 
-        return TopicDTO.convert(topicsRepository.findAll());
+        return TopicDTO.convert(topicsRepository.findAll(pageable));
     }
 
     @PutMapping("/{id}")
