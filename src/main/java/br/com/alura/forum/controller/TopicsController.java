@@ -8,6 +8,7 @@ import br.com.alura.forum.model.Topic;
 import br.com.alura.forum.repository.CourseRepository;
 import br.com.alura.forum.repository.TopicsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -64,6 +65,7 @@ public class TopicsController {
     }
 
     @GetMapping
+    @Cacheable("topicList")
     public Page<TopicDTO> list(@RequestParam(required = false) String courseName,
                                @PageableDefault Pageable pageable) {
 
