@@ -8,11 +8,10 @@ import br.com.alura.forum.model.Topic;
 import br.com.alura.forum.repository.CourseRepository;
 import br.com.alura.forum.repository.TopicsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +33,7 @@ public class TopicsController {
 
     @PostMapping
     @Transactional
+    @CacheEvict(value = "topicList", allEntries = true)
     public ResponseEntity<TopicDTO> add(@RequestBody @Valid TopicForm topicForm, UriComponentsBuilder uriBuilder) {
         Topic topic = topicForm.convert(courseRepository);
 
@@ -46,6 +46,7 @@ public class TopicsController {
 
     @DeleteMapping("/{id}")
     @Transactional
+    @CacheEvict(value = "topicList", allEntries = true)
     public ResponseEntity<?> delete(@PathVariable Long id) {
         if (topicExists(id)) {
             return ResponseEntity.notFound().build();
@@ -78,6 +79,7 @@ public class TopicsController {
 
     @PutMapping("/{id}")
     @Transactional
+    @CacheEvict(value = "topicList", allEntries = true)
     public ResponseEntity<TopicDTO> update(@PathVariable Long id, @RequestBody @Valid UpdatedTopicForm updatedTopicForm) {
         if (topicExists(id)) {
             return ResponseEntity.notFound().build();
