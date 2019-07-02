@@ -44,7 +44,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
             .antMatchers(HttpMethod.POST, "/auth").permitAll()
-            .antMatchers(HttpMethod.GET, "/topics").permitAll()
+            .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
+            .antMatchers(HttpMethod.GET, "/topics/*").permitAll()
             .antMatchers(HttpMethod.GET, "/topics/*").permitAll()
             .anyRequest().authenticated()
             .and().csrf().disable()
@@ -54,5 +55,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers(
+            "/**.html",
+            "/v2/api-docs",
+            "/webjars/**",
+            "/configuration/**",
+            "/swagger-resources/**");
     }
 }
