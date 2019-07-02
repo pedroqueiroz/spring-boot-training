@@ -1,6 +1,8 @@
 package br.com.alura.forum.config.security;
 
 import br.com.alura.forum.model.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -34,11 +36,22 @@ public class TokenService {
 
     public boolean isTokenValid(String token) {
         try {
-            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+            getJWTClaims(token);
+
             return true;
         }
         catch (Exception e) {
             return false;
         }
+    }
+
+    private Jws<Claims> getJWTClaims(String token) {
+        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+    }
+
+    public Long getUserId(String token) {
+        Claims claims = getJWTClaims(token).getBody();
+
+        return Long.valueOf(claims.getSubject());
     }
 }
