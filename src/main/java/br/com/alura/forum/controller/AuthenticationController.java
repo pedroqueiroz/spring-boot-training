@@ -1,6 +1,7 @@
 package br.com.alura.forum.controller;
 
 import br.com.alura.forum.config.security.TokenService;
+import br.com.alura.forum.controller.dto.TokenDTO;
 import br.com.alura.forum.controller.form.LoginForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,8 @@ import javax.validation.Valid;
 @RequestMapping("/auth")
 public class AuthenticationController {
 
+    private static final String AUTHENTICATION_TYPE = "Bearer";
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -26,7 +29,7 @@ public class AuthenticationController {
     private TokenService tokenService;
 
     @PostMapping
-    public ResponseEntity<?> authenticate(@RequestBody @Valid LoginForm loginForm) {
+    public ResponseEntity<TokenDTO> authenticate(@RequestBody @Valid LoginForm loginForm) {
         UsernamePasswordAuthenticationToken loginData = loginForm.convert();
 
         try {
@@ -34,7 +37,7 @@ public class AuthenticationController {
             String token = tokenService.generateToken(authentication);
 
             System.out.println(token);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(new TokenDTO(token, AUTHENTICATION_TYPE));
         }
         catch (AuthenticationException ae) {
             return ResponseEntity.badRequest().build();
